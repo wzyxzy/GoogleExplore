@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView toolbar_image;
     private Toolbar toolbar;
     private ProgressBar index_progressBar;
+    private final String LOG_TAG = getClass().getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,38 +46,66 @@ public class MainActivity extends AppCompatActivity {
 
     private void initData() {
         //        RequestQueue mQueue = Volley.newRequestQueue(this, new ProxiedHurlStack());
-        RequestQueue mQueue = Volley.newRequestQueue(this);
-        //如果用https连接，可以用下面的代码
-//        HTTPSTrustManager.allowAllSSL();
-//        String url = URL + content.getText();
-        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                gotoWeb(response);
+//        RequestQueue mQueue = Volley.newRequestQueue(this);
+//        //如果用https连接，可以用下面的代码
+////        HTTPSTrustManager.allowAllSSL();
+////        String url = URL + content.getText();
+//        StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+//                gotoWeb(response);
+//
+//            }
+//        }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//        mQueue.add(stringRequest);
+//    }
+//
+//    private void gotoWeb(String response) {
+//        result.loadDataWithBaseURL("https://www.google.com.hk", response, "text/html", "utf-8", null);
+        result.loadUrl(url);
+        result.getSettings().setJavaScriptEnabled(true);
 
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        mQueue.add(stringRequest);
-    }
-
-    private void gotoWeb(String response) {
-        result.loadDataWithBaseURL("https://www.google.com.hk", response, "text/html", "utf-8", null);
         if (swipe_container.isRefreshing())
             swipe_container.setRefreshing(false);
+
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        result.getSettings().setJavaScriptEnabled(true);
+        result.getSettings().setJavaScriptEnabled(false);
+    }
+
+//    @Override
+//    protected void o() {
+//        super.onRestart();
+//        result.getSettings().setJavaScriptEnabled(true);
+//
+//    }
+
+
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        result.getSettings().setJavaScriptEnabled(false);
+//        return true;
+//    }
+
     private void initView() {
+
         result = (WebView) findViewById(R.id.result);
 //        result.getSettings().setJavaScriptEnabled(false);
 //        result.getSettings().setSupportZoom(false);
 //        result.getSettings().setBuiltInZoomControls(false);
 //        result.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
 //        result.getSettings().setDefaultFontSize(18);
+
+//        result.getSettings().setDomStorageEnabled(true);
         result.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
@@ -87,9 +117,17 @@ public class MainActivity extends AppCompatActivity {
         });
         result.setWebViewClient(new WebViewClient() {
             @Override
+            public void onPageFinished(WebView view, String url) {
+                view.getSettings().setJavaScriptEnabled(false);
+            }
+
+
+
+            @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
 //                String newurl = request.getUrl().toString();
-                if (url.startsWith("https://www.google.com.hk") || url.isEmpty()) {
+                if (url.startsWith("http://cncncn.tk") || url.isEmpty()) {
 //                    initWeb(request.getUrl().toString().replace("https://www.google.com.hk","http://192.168.199.192:8080/GotoGoogle?GoogleRoot="));
 //                    view.loadDataWithBaseURL("http://192.168.199.192:8080/GotoGoogle?GoogleRoot=", response, "text/html", "utf-8", null);
                     Toast.makeText(getApplicationContext(), "该版本仅支持谷歌搜索，更多功能请购买pro版", Toast.LENGTH_SHORT).show();
@@ -101,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                         return true;
                     } catch (ActivityNotFoundException e) {
+                        Log.d(LOG_TAG, url);
+
                         String url1 = url.replace("intent", "https");
                         Uri uri = Uri.parse(url1);
                         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -112,9 +152,9 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }
+
         });
-        result.getSettings().setJavaScriptEnabled(true);
-        result.getSettings().setDomStorageEnabled(true);
+
 
         swipe_container = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipe_container.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -161,16 +201,4 @@ public class MainActivity extends AppCompatActivity {
         index_progressBar = (ProgressBar) findViewById(R.id.index_progressBar);
     }
 
-    private void submit() {
-        // validate
-        String edittext = toolbar_edittext.getText().toString().trim();
-        if (TextUtils.isEmpty(edittext)) {
-            Toast.makeText(this, "请输入要搜索的内容", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // TODO validate success, do something
-
-
-    }
 }

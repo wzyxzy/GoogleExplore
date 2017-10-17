@@ -30,33 +30,27 @@
             android:src="@drawable/searchfor" />
     </android.support.v7.widget.Toolbar>
 
+    <ProgressBar
+        android:id="@+id/index_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:progress="0"
+        android:secondaryProgress="0"
+        android:visibility="visible" />
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <LinearLayout
+
+        <WebView
+            android:id="@+id/result"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <ProgressBar
-                android:id="@+id/index_progressBar"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:progress="0"
-                android:secondaryProgress="0"
-                android:visibility="visible" />
-
-            <WebView
-                android:id="@+id/result"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+            android:layout_height="match_parent" />
 
 
     </android.support.v4.widget.SwipeRefreshLayout>
-
 </LinearLayout>
